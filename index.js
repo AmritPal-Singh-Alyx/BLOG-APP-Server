@@ -11,7 +11,7 @@ require('dotenv').config();
 
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require("./routes/postRoutes");
-const { notFound, errorHandler } = require("./middleware");
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 
 
