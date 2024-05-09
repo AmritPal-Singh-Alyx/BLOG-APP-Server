@@ -7,6 +7,8 @@ const User = require("../models/userModel");
 // importing bcrypt to hash the password
 const bcrypt = require("bcryptjs");
 
+// importing jsonWebToken
+const jwt = require("jsonwebtoken");
 
 
 
@@ -60,7 +62,36 @@ const registerUser = async (req, res, next) => {
 
 
 const loginUser = async (req, res, next) => {
-    res.json(" Login user")
+
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return next(new HttpError("Please fill the Details"), 422);
+        };
+
+        const newEmail = email.toLowerCase();
+
+        const emailExist = await User.findOne({ email: newEmail });
+        if (!emailExist) {
+            return next(new HttpError("Invalid Credentials!"), 422);
+        };
+
+        const comparePass = await bcrypt.compare(password, emailExist.password);
+        if (!comparePass) {
+            return next(new HttpError("Invalid Credentials!"), 422);
+        };
+
+        const { _id: id, name } = emailExist;
+        const token = jwt.sign({ id, name }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+        res.status(200).json({ token, id, name });
+
+
+    } catch (error) {
+        return next(new HttpError("Login Failed. Please check your credentials!"), 422);
+    };
+
 };
 
 
