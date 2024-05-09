@@ -1,6 +1,6 @@
 // Unsupported (404) routes
 
-const notFound = (res, req, next) => {
+const notFound = (req, res, next) => {
 
     const error = new Error(`not found - ${req.originalUrl}`);
 
@@ -11,7 +11,7 @@ const notFound = (res, req, next) => {
 
 // Middleware to handle the errors
 
-const errorHandler = (error, res, req, next) => {
+const errorHandler = (error, req, res, next) => {
     if (res.headerSent) {
         return next(error);
     };

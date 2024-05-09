@@ -3,20 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Amritpal Singh",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongodb": "^6.6.1",
-    "mongoose": "^8.3.4"
-  },
-  "devDependencies": {
+    "mongoose": "^8.3.4",
     "nodemon": "^3.1.0"
   }
 }

@@ -1,10 +1,55 @@
+// importing the error Model to handle the errors
+const HttpError = require("../models/errorModel");
+
+// importing the schema from userModel
+const User = require("../models/userModel");
+
+// importing bcrypt to hash the password
+const bcrypt = require("bcryptjs");
+
+
+
+
 // +++++++++++++++++ Resgister a New user +++++++++++++++++
 // POST : api/users/register
 // Unprotected
 
-const registerUser = (res, req, next) => {
+const registerUser = async (req, res, next) => {
 
-    res.json("Register User")
+    try {
+
+        const { name, email, password, password2 } = req.body;
+
+        if (!name || !email || !password) {
+            return next(new HttpError("Fill all the fields."), 422);
+        };
+
+        const newEmail = email.toLowerCase();
+
+        const emailExist = await User.findOne({ email: newEmail });
+        if (emailExist) {
+            return next(new HttpError("Email already exist!"), 422);
+        };
+
+        if ((password.trim()).length < 6) {
+            return next(new HttpError("Password should be atleast 6 characters or more"), 422);
+        };
+
+        if (password != password2) {
+            return next(new HttpError("Password do not match", 422));
+        };
+
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(password, salt);
+        const newUser = await User.create({ name, email: newEmail, password: hashedPass });
+
+        res.status(201).json(newUser);
+
+    } catch (error) {
+        return next(new HttpError(" User registration failed.", 422))
+
+    }
 }
 
 
@@ -14,7 +59,7 @@ const registerUser = (res, req, next) => {
 // Unprotected
 
 
-const loginUser = (res, req, next) => {
+const loginUser = async (req, res, next) => {
     res.json(" Login user")
 };
 
@@ -24,7 +69,7 @@ const loginUser = (res, req, next) => {
 // POST : api/users/:id
 // Protected
 
-const getUser = (res, req, next) => {
+const getUser = async (req, res, next) => {
     res.json(" User Profile")
 }
 
@@ -34,7 +79,7 @@ const getUser = (res, req, next) => {
 // POST : api/users/change-avatar
 // Protected
 
-const changeAvatar = (res, req, next) => {
+const changeAvatar = async (req, res, next) => {
     res.json("Change avatar");
 }
 
@@ -44,7 +89,7 @@ const changeAvatar = (res, req, next) => {
 // POST : api/users/edit-user
 // Protected
 
-const editUser = (res, req, next) => {
+const editUser = async (req, res, next) => {
     res.json("Edit User Details")
 }
 
@@ -53,7 +98,7 @@ const editUser = (res, req, next) => {
 // POST : api/users/authors
 // UnProtected
 
-const getAuthors = (res, req, next) => {
+const getAuthors = async (req, res, next) => {
     res.json("Get all users/Authors")
 }
 
