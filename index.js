@@ -4,6 +4,7 @@ const express = require('express');
 const { mongoose, connect } = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const upload = require("express-fileupload");
 
 
 
@@ -20,7 +21,8 @@ const app = express();
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ credentials: true, origin: "https://localhost:3000" }));
-
+app.use(upload());
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
 
 
