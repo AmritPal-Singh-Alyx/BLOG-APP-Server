@@ -132,7 +132,7 @@ const changeAvatar = async (req, res, next) => {
 
     try {
         if (!req.files.avatar) {
-            return next(new HttpsError("Please upload an image"), 422);
+            return next(new HttpsError("Please upload an image", 422));
         };
 
         // find the User from database
@@ -155,18 +155,16 @@ const changeAvatar = async (req, res, next) => {
         fileName = avatar.name;
         let splittedFilename = fileName.split('.');
         let newFilename = splittedFilename[0] + uuid() + "." + splittedFilename[splittedFilename.length - 1];
-        avatar.mv(path.join(__dirname, "..", "uploads", newFilename),
-
-            async (err) => {
-                if (err) {
-                    return next(new HttpsError(err));
-                };
-                const updateAvatar = await User.findByIdAndUpdate(req.user.id, { avatar: newFilename }, { new: true });
-                if (!updateAvatar) {
-                    return next(new HttpsError(" Avatar couldn't be changed"), 422);
-                };
-                res.status(200).json(updateAvatar);
-            });
+        avatar.mv(path.join(__dirname, "..", "uploads", newFilename), async (err) => {
+            if (err) {
+                return next(new HttpsError(err));
+            };
+            const updatedAvatar = await User.findByIdAndUpdate(req.user.id, { avatar: newFilename }, { new: true });
+            if (!updatedAvatar) {
+                return next(new HttpsError(" Avatar couldn't be changed"), 422);
+            };
+            res.status(200).json(updatedAvatar);
+        });
 
 
     } catch (error) {
