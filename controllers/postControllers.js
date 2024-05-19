@@ -17,7 +17,7 @@ const createPost = async (req, res, next) => {
     try {
 
         let { title, category, description } = req.body;
-        if (!title || !category || !description) {
+        if (!title || !category || !description || !req.files) {
             return next(new HttpsError("Fill all the fields", 422));
         };
 
@@ -34,7 +34,7 @@ const createPost = async (req, res, next) => {
             if (err) {
                 return next(new HttpsError(err));
             } else {
-                const newPost = await Post.create({ title, category, description, thumbnail: newFilename });
+                const newPost = await Post.create({ title, category, description, thumbnail: newFilename, creator: req.user.id });
                 if (!newPost) {
                     return next(new HttpsError("Post couldn't be created", 422));
                 };
