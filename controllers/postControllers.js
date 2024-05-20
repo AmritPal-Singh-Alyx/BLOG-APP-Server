@@ -30,7 +30,7 @@ const createPost = async (req, res, next) => {
         let fileName = thumbnail.name;
         let splittedFilename = fileName.split(".");
         let newFilename = splittedFilename[0] + uuid() + "." + splittedFilename[splittedFilename.length - 1];
-        thumbnail.mv(path.join(__dirname, "..", "/uploads", newFilename), async (err) => {
+        thumbnail.mv(path.join(__dirname, "..", "uploads", newFilename), async (err) => {
             if (err) {
                 return next(new HttpsError(err));
             } else {
@@ -171,7 +171,64 @@ const getUserPosts = async (req, res, next) => {
 // Protected
 
 const editPost = async (req, res, next) => {
-    res.json("Edit Post");
+
+    try {
+        let fileName;
+        let newFilename;
+        let updatedPost;
+        let postId = req.params.id;
+
+        let { title, category, description } = req.body;
+        // Reactquill has  a paragraph opening and closing tag with a break tag in between so there are 11 characters in there already.
+        if (!title || !category || description < 12) {
+            return next(new HttpsError("Fill all the fields", 422));
+        };
+
+        if (!req.files) {
+            updatedPost = await Post.findByIdAndUpdate(postId, { title, category, description }, { new: true });
+        } else {
+            // find old post
+            const oldPost = await Post.findById(postId);
+            if (!oldPost) {
+                return next(new HttpsError("Post not found", 404))
+            }
+            // deleting the old thumbnail from the post
+            fs.unlink(path.join(__dirname, "..", "uploads", oldPost.thumbnail), async (err) => {
+                if (err) {
+                    return next(new HttpsError(err));
+                }
+            })
+            // uploading new thumbnail
+            const { thumbnail } = req.files;
+            // checking the file size
+            if (thumbnail.size > 2000000) {
+                return next(new HttpsError("File size too big. Should be less than 2mb", 422))
+            }
+            // changing the name of the files because some files can have same name
+            fileName = thumbnail.name;
+            let splittedFilename = fileName.split(".");
+            newFilename = splittedFilename[0] + uuid()
+                + "." + splittedFilename[splittedFilename.length - 1];
+            thumbnail.mv(path.join(__dirname, "..", "uploads", newFilename), async (err) => {
+                if (err) {
+                    return next(new HttpsError(err));
+                };
+
+
+            })
+            updatedPost = await Post.findByIdAndUpdate(postId, { title, category, description, thumbnail: newFilename }, { new: true });
+        }
+
+        if (!updatedPost) {
+            return next(new HttpsError(" couldn't be created", 400));
+        };
+
+        res.status(200).json(updatedPost);
+
+    } catch (error) {
+        return next(new HttpsError(error));
+    };
+
 };
 
 
