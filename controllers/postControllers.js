@@ -217,7 +217,7 @@ const editPost = async (req, res, next) => {
         }
 
         if (!updatedPost) {
-            return next(new HttpsError(" couldn't be created", 400));
+            return next(new HttpsError(" couldn't be update", 400));
         };
 
         res.status(200).json(updatedPost);

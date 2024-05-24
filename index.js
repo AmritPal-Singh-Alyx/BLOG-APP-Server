@@ -20,7 +20,7 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const app = express();
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: "http://localhost:1234" }));
 app.use(upload());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
@@ -47,17 +47,19 @@ app.get('/', (req, res) => {
 
 
 // Connecting the server with the MongoDB and make it live on port 
-async function startServer() {
-    try {
+// async function startServer() {
+//     try {
 
-        await mongoose.connect(process.env.MONGO_URI);
+//         await mongoose.connect(process.env.MONGO_URI);
 
-        app.listen(5000, () => console.log(`Server is live on port ${process.env.PORT}`));
+//         app.listen(5000, () => console.log(`Server is live on port ${process.env.PORT}`));
 
-    } catch (error) {
-        console.error("The server not able to connnect with the MongoDB", error)
+//     } catch (error) {
+//         console.error("The server not able to connnect with the MongoDB", error)
 
-    }
-}
+//     }
+// }
 
-startServer();
+// startServer();
+
+connect(process.env.MONGO_URI).then(app.listen(process.env.PORT || 5000, () => { console.log(`Server is running on port ${process.env.PORT}`) })).catch(error => { console.log(error) });
