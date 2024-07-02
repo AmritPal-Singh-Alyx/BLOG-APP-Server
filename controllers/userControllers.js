@@ -136,17 +136,27 @@ const loginUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
     try {
         const { id } = req.params;
+        console.log(`Fetching user with ID: ${id}`);  // Debugging log
+
+        // Validate the ObjectId format
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            console.log(`Invalid User ID format: ${id}`);
+            return next(new HttpsError("Invalid User ID format", 422));
+        }
+
         const user = await User.findById(id).select("-password");
         if (!user) {
-            return next(new HttpsError("User not found"), 404);
+            console.log(`User not found: ${id}`);
+            return next(new HttpsError("User not found", 404));
         };
         res.status(200).json(user);
     } catch (error) {
-
-        return next(new HttpsError("Invalid request"), 422);
-
+        console.error(error);  // Log the error for debugging
+        return next(new HttpsError("Server Error. Unable to fetch user", 500));
     };
 };
+
+
 
 
 
