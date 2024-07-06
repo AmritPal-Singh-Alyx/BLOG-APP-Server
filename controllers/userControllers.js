@@ -172,49 +172,59 @@ const getUser = async (req, res, next) => {
 // POST : api/users/change-avatar
 // Protected
 
+
 const changeAvatar = async (req, res, next) => {
-
     try {
-        if (!req.files.avatar) {
+        if (!req.files || !req.files.avatar) {
             return next(new HttpsError("Please upload an image", 422));
-        };
-
-        // find the User from database
-        const user = await User.findById(req.user.id);
-
-        //Delete the avatart if exists
-        if (user.avatar) {
-            fs.unlink(path.join(__dirname, "..", "uploads", user.avatar), (err) => {
-                return next(new HttpsError(err));
-            });
-        };
-
-        const { avatar } = req.files;
-        if (avatar.size > 500000) {
-            return next(new HttpsError("The file size is too big. should be less than 500kb"), 422)
         }
 
-        // change the file name if they have same name
-        let fileName;
-        fileName = avatar.name;
-        let splittedFilename = fileName.split('.');
-        let newFilename = splittedFilename[0] + uuid() + "." + splittedFilename[splittedFilename.length - 1];
-        avatar.mv(path.join(__dirname, "..", "uploads", newFilename), async (err) => {
+        const { avatar } = req.files;
+
+        // Check file size
+        if (avatar.size > 500000) {
+            return next(new HttpsError("The file size is too big. Should be less than 500kb", 422));
+        }
+
+        // Find the user from database
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return next(new HttpsError("User not found", 404));
+        }
+
+        // Delete the existing avatar if it exists
+        if (user.avatar) {
+            const oldAvatarPath = path.join(__dirname, "..", "uploads", user.avatar);
+            fs.unlink(oldAvatarPath, (err) => {
+                if (err && err.code !== 'ENOENT') {
+                    return next(new HttpsError("Failed to delete old avatar", 500));
+                }
+            });
+        }
+
+        // Change the file name if they have the same name
+        const splittedFilename = avatar.name.split('.');
+        const newFilename = `${splittedFilename[0]}_${uuid()}.${splittedFilename[splittedFilename.length - 1]}`;
+        const newAvatarPath = path.join(__dirname, "..", "uploads", newFilename);
+
+        avatar.mv(newAvatarPath, async (err) => {
             if (err) {
-                return next(new HttpsError(err));
-            };
-            const updatedAvatar = await User.findByIdAndUpdate(req.user.id, { avatar: newFilename }, { new: true });
-            if (!updatedAvatar) {
-                return next(new HttpsError(" Avatar couldn't be changed"), 422);
-            };
-            res.status(200).json(updatedAvatar);
+                return next(new HttpsError("Failed to upload new avatar", 500));
+            }
+
+            // Update user with new avatar
+            user.avatar = newFilename;
+            await user.save();
+
+            res.status(200).json({ avatar: user.avatar });
         });
-
-
     } catch (error) {
-        return next(new HttpsError(error));
-    };
+        return next(new HttpsError(error.message || "Server error", 500));
+    }
 };
+
+
+
 
 
 
@@ -234,9 +244,8 @@ const changeAvatar = async (req, res, next) => {
 
 const editUser = async (req, res, next) => {
     try {
-
-        const { name, email, currentPassword, newPassword, newConfirmPassword } = req.body;
-        if (!name || !email || !currentPassword || !newPassword || !newConfirmPassword) {
+        const { name, email, currentPassword, newPassword, confirmNewPassword } = req.body;
+        if (!name || !email || !currentPassword || !newPassword || !confirmNewPassword) {
             return next(new HttpsError("Fill all the fields", 422));
         };
 
@@ -246,22 +255,21 @@ const editUser = async (req, res, next) => {
             return next(new HttpsError("User not found", 403));
         };
 
-        // makesure new email doesn't already exist
+        // make sure new email doesn't already exist
         const emailExist = await User.findOne({ email });
-        // we want to update other details with/without changing the email (which is a unique id because we use it  to login ).
-        if (emailExist && (emailExist._id != req.user.id)) {
-            return next(new HttpsError("Email already exist"), 422);
+        if (emailExist && (emailExist._id.toString() !== req.user.id)) {
+            return next(new HttpsError("Email already exists", 422));
         };
 
-        //compare current password and new password
+        // compare current password and new password
         const validateUserPassword = await bcrypt.compare(currentPassword, user.password);
         if (!validateUserPassword) {
-            return next(new HttpsError(" Invalid current password", 422));
+            return next(new HttpsError("Invalid current password", 422));
         };
 
-        //compare new password
-        if (newPassword !== newConfirmPassword) {
-            return next(new HttpsError("New passwords do not match", 422))
+        // compare new password
+        if (newPassword !== confirmNewPassword) {
+            return next(new HttpsError("New passwords do not match", 422));
         }
 
         // hash the new password
@@ -272,12 +280,11 @@ const editUser = async (req, res, next) => {
         const newInfo = await User.findByIdAndUpdate(req.user.id, { name, email, password: hash }, { new: true });
 
         res.status(200).json(newInfo);
-
-
     } catch (error) {
         return next(new HttpsError(error));
     };
 };
+
 
 
 
