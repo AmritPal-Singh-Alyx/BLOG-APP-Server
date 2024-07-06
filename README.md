@@ -1,71 +1,107 @@
-<<<<<<< HEAD
-## Work in Progress
+# MERN CRUD Blog App
 
-🚧 **Note: This project is currently under development.** 🚧
+## Table of Contents
 
-Hello there! Welcome to my MERN stack blog app project. I'm excited to share that I'm actively working on building this application.
-As it's my first day of working on it, I'm diving into the world of full-stack development with MongoDB, Express.js, React.js, and Node.js.
+1. [Introduction](#introduction)
+2. [Project Structure](#project-structure)
+3. [Features](#features)
+4. [Technologies Used](#technologies-used)
+5. [Installation and Setup](#installation-and-setup)
+6. [API Endpoints](#api-endpoints)
+7. [Usage](#usage)
+8. [Contributing](#contributing)
+9. [License](#license)
+10. [Acknowledgements](#acknowledgements)
 
-### What's Being Worked On:
-- Setting up the project structure and directory layout.
-- Designing the user interface with React components for a modern and intuitive user experience.
-- Implementing backend APIs using Express.js to handle CRUD operations for blog posts.
-- Integrating MongoDB as the database to store blog posts and user authentication data.
-- Implementing user authentication and authorization for secure access to the app's features.
-- Styling and theming the application with CSS to make it visually appealing.
+## Introduction
 
-### What to Expect:
-- Regular updates as I make progress on the project.
-- Detailed documentation on how to set up and run the application locally.
-- Instructions on how to contribute to the project if you're interested in getting involved.
-- An open and collaborative development process where feedback and suggestions are welcomed and valued.
+Welcome to my MERN stack blog app! This project is a full-stack application built using MongoDB, Express.js, React.js, and Node.js. It provides a platform for users to create, read, update, and delete blog posts. The app also includes features for user authentication, authorization, and profile management.
 
-### How You Can Help:
-- Testing the application and providing feedback on usability, functionality, and performance.
-- Reporting any bugs or issues you encounter during testing.
-- Contributing code improvements, new features, or documentation updates through pull requests.
-- Spreading the word about this project to others who might be interested in contributing or using the app.
+## Project Structure
 
-Feel free to check back often for updates on my progress. 
-I'll be adding new features, fixing bugs, and improving the overall functionality of the app as I continue to develop it.
+```
+root
+│   README.md
+│   package.json
+│   .env
+│
+├───client
+│   │   package.json
+│   │   public
+│   │   src
+│   │   ├───components
+│   │   ├───context
+│   │   ├───pages
+│   │   ├───styles
+│   │   └───utils
+│
+└───server
+    │   package.json
+    │   server.js
+    ├───config
+    ├───controllers
+    ├───middleware
+    ├───models
+    ├───routes
+    └───utils
+```
 
-If you have any suggestions, feedback, or would like to contribute, please don't hesitate to reach out.
-Your support and encouragement are greatly appreciated!
+## Features
 
-Happy coding! 😊✨
-=======
-## Work in Progress
+- User Authentication and Authorization
+- Create, Read, Update, and Delete (CRUD) operations for blog posts
+- User profile management
+- Avatar upload functionality
+- Responsive UI
 
-🚧 **Note: This project is currently under development.** 🚧
+## Technologies Used
 
-Hello there! Welcome to my MERN stack blog app project. I'm excited to share that I'm actively working on building this application.
-As it's my first day of working on it, I'm diving into the world of full-stack development with MongoDB, Express.js, React.js, and Node.js.
+- **MongoDB**: Database for storing blog posts and user data
+- **Express.js**: Web framework for Node.js
+- **React.js**: Frontend library for building user interfaces
+- **Node.js**: JavaScript runtime environment
+- **Mongoose**: ODM for MongoDB
+- **JWT**: For user authentication
+- **Axios**: For making HTTP requests
+- **bcrypt**: For hashing passwords
+- **multer**: For handling file uploads
 
-### What's Being Worked On:
-- Setting up the project structure and directory layout.
-- Designing the user interface with React components for a modern and intuitive user experience.
-- Implementing backend APIs using Express.js to handle CRUD operations for blog posts.
-- Integrating MongoDB as the database to store blog posts and user authentication data.
-- Implementing user authentication and authorization for secure access to the app's features.
-- Styling and theming the application with CSS to make it visually appealing.
+## Installation and Setup
 
-### What to Expect:
-- Regular updates as I make progress on the project.
-- Detailed documentation on how to set up and run the application locally.
-- Instructions on how to contribute to the project if you're interested in getting involved.
-- An open and collaborative development process where feedback and suggestions are welcomed and valued.
+### Prerequisites
 
-### How You Can Help:
-- Testing the application and providing feedback on usability, functionality, and performance.
-- Reporting any bugs or issues you encounter during testing.
-- Contributing code improvements, new features, or documentation updates through pull requests.
-- Spreading the word about this project to others who might be interested in contributing or using the app.
+- Node.js and npm installed on your local machine
+- MongoDB server running locally or a MongoDB Atlas account
 
-Feel free to check back often for updates on my progress. 
-I'll be adding new features, fixing bugs, and improving the overall functionality of the app as I continue to develop it.
+## API Endpoints
 
-If you have any suggestions, feedback, or would like to contribute, please don't hesitate to reach out.
-Your support and encouragement are greatly appreciated!
+### Authentication
 
-Happy coding! 😊✨
->>>>>>> aff09b37f0beb6dba1f9c3d01e9db3fd1327d03b
+- `POST /api/users/register`: Register a new user
+- `POST /api/users/login`: Login a user
+
+### User
+
+- `GET /api/users/:id`: Get user details
+- `PATCH /api/users/edit-user`: Edit user details
+- `POST /api/users/change-avatar`: Change user avatar
+
+### Blog Posts
+
+- `GET /api/posts`: Get all posts
+- `GET /api/posts/:id`: Get a single post
+- `POST /api/posts`: Create a new post
+- `PATCH /api/posts/:id`: Update a post
+- `DELETE /api/posts/:id`: Delete a post
+
+## Usage
+
+After completing the installation and setup steps, you can start using the application. Register a new user, login, and start creating blog posts. You can edit your profile and upload a new avatar from the user profile page.
+
+## Acknowledgements
+
+Thank you for taking the time to check out my project. Your support and encouragement are greatly appreciated!
+
+---
+
+Feel free to reach out if you have any questions or suggestions. Happy coding! 😊✨
